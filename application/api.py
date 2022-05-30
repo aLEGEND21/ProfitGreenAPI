@@ -18,9 +18,13 @@ def get_summary(ticker):
     # Create the soup
     soup = BeautifulSoup(response.text, 'html.parser')
     
-    # Return false if the Yahoo Finance redirects to the lookup page
+    # Return an error if the Yahoo Finance redirects to the lookup page
     if "lookup" in str(response.url):
         return {"Error": "Invalid ticker"}
+    
+    # Return an error if the quote is an ETF
+    if soup.find("li", {"data-test": "HOLDINGS"}) is not None:
+        return {"Error": "ETFs are not supported"}
 
     # Store the quote data in a dict which will be returned later
     data = {}
