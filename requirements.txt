@@ -1,0 +1,4 @@
+beautifulsoup4==4.11.1
+Flask==2.0.2
+python-dotenv==0.20.0
+requests==2.26.0
