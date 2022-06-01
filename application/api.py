@@ -18,18 +18,35 @@ def get_summary(ticker):
     # Create the soup
     soup = BeautifulSoup(response.text, 'html.parser')
     
-    # Return an error if Yahoo Finance redirects to the lookup page
+    # Return an error and a list of similar tickers if Yahoo Finance redirects to the lookup page
     if "lookup" in str(response.url):
+        similar_tickers = []
+        lookup_table = soup.find('table', {'class': 'lookup-table W(100%) Pos(r) BdB Bdc($seperatorColor) smartphone_Mx(20px)'})
+        if lookup_table is not None:
+            for row in lookup_table.tbody.find_all('tr'):
+                items = row.findChildren('td')
+                similar_tickers.append(
+                    {
+                        'symbol': items[0].text,
+                        'name': items[1].text,
+                        'last-price': items[2].text,
+                        'industry/category': items[3].text,
+                        'type': items[4].text,
+                        'exchange': items[5].text
+                    }
+                )
         return {
-            "error": "Invalid ticker",
-            "error_code": 404
+            "error": f"Invalid ticker: {ticker}",
+            "error_code": 404,
+            "similar_tickers": similar_tickers
         }
     
     # Return an error if Yahoot Finance says that the ticker couldn't be found
     if soup.find("h1", {"class": "D(ib) Fz(18px)"}).text.strip() == f"({ticker})":
         return {
-            "error": "Invalid ticker",
-            "error_code": 404
+            "error": f"Invalid ticker: {ticker}",
+            "error_code": 404,
+            "similar_tickers": []
         }
     
     # Return an error if the quote is an ETF
