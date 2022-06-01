@@ -20,15 +20,15 @@ def get_summary(ticker):
     
     # Return an error if Yahoo Finance redirects to the lookup page
     if "lookup" in str(response.url):
-        return {"Error": "Invalid ticker"}
+        return {"error": "Invalid ticker"}
     
     # Return an error if Yahoot Finance says that the ticker couldn't be found
     if soup.find("h1", {"class": "D(ib) Fz(18px)"}).text.strip() == f"({ticker})":
-        return {"Error": "Invalid ticker"}
+        return {"error": "Invalid ticker"}
     
     # Return an error if the quote is an ETF
     if soup.find("li", {"data-test": "HOLDINGS"}) is not None:
-        return {"Error": "ETFs are not supported"}
+        return {"error": "ETFs are not supported"}
 
     # Store the quote data in a dict which will be returned later
     data = {}
