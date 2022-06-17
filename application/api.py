@@ -48,13 +48,6 @@ def get_summary(ticker):
             "error_code": 404,
             "similar_tickers": []
         }
-    
-    # Return an error if the quote is an ETF
-    if soup.find("li", {"data-test": "HOLDINGS"}) is not None:
-        return {
-            "error": "ETFs are not supported",
-            "error_code": 403
-        }
 
     # Store the quote data in a dict which will be returned later
     data = {}
@@ -81,6 +74,24 @@ def get_summary(ticker):
         data["volume"] = soup.find("fin-streamer", {"data-field": "regularMarketVolume"}).text
         data["volume-24-hour"] = soup.find("td", {"data-test": "TD_VOLUME_24HR-value"}).text
         data["volume-24-hour-all-currencies"] = soup.find("td", {"data-test": "TD_VOLUME_24HR_ALLCURRENCY-value"}).text
+    elif soup.find("li", {"data-test": "HOLDINGS"}) is not None: # ETF
+        data["_type"] = "etf"
+        data["previous-close"] = soup.find("td", {"data-test": "PREV_CLOSE-value"}).text
+        data["open"] = soup.find("td", {"data-test": "OPEN-value"}).text
+        data["bid"] = soup.find("td", {"data-test": "BID-value"}).text
+        data["ask"] = soup.find("td", {"data-test": "ASK-value"}).text
+        data["days-range"] = soup.find("td", {"data-test": "DAYS_RANGE-value"}).text
+        data["52-week-range"] = soup.find("td", {"data-test": "FIFTY_TWO_WK_RANGE-value"}).text
+        data["volume"] = soup.find("fin-streamer", {"data-field": "regularMarketVolume"}).text
+        data["avg-volume"] = soup.find("td", {"data-test": "AVERAGE_VOLUME_3MONTH-value"}).text
+        data["net-assets"] = soup.find("td", {"data-test": "NET_ASSETS-value"}).text
+        data["nav"] = soup.find("td", {"data-test": "NAV-value"}).text
+        data["pe-ratio"] = soup.find("td", {"data-test": "PE_RATIO-value"}).text
+        data["yield"] = soup.find("td", {"data-test": "TD_YIELD-value"}).text
+        data["ytd-daily-total-return"] = soup.find("td", {"data-test": "YTD_DTR-value"}).text
+        data["beta"] = soup.find("td", {"data-test": "BETA_5Y-value"}).text
+        data["expense-ratio"] = soup.find("td", {"data-test": "EXPENSE_RATIO-value"}).text
+        data["inception-date"] = soup.find("td", {"data-test": "FUND_INCEPTION_DATE-value"}).text
     else: # stock
         data["_type"] = "stock"
         data["previous-close"] = soup.find("td", {"data-test": "PREV_CLOSE-value"}).text
