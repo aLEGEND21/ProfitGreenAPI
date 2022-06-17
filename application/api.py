@@ -60,7 +60,7 @@ def get_summary(ticker):
     data["change-dollar"] = soup.find("fin-streamer", {"data-symbol": ticker, "data-field": "regularMarketChange"}).findChild("span").text
 
     # Determine what type of quote it is
-    if "-" in url: # crypto
+    if "-usd" in url.lower(): # crypto
         data["_type"] = "crypto"
         data["previous-close"] = soup.find("td", {"data-test": "PREV_CLOSE-value"}).text
         data["open"] = soup.find("td", {"data-test": "OPEN-value"}).text
@@ -74,7 +74,7 @@ def get_summary(ticker):
         data["volume"] = soup.find("fin-streamer", {"data-field": "regularMarketVolume"}).text
         data["volume-24-hour"] = soup.find("td", {"data-test": "TD_VOLUME_24HR-value"}).text
         data["volume-24-hour-all-currencies"] = soup.find("td", {"data-test": "TD_VOLUME_24HR_ALLCURRENCY-value"}).text
-    elif soup.find("li", {"data-test": "HOLDINGS"}) is not None: # ETF
+    elif soup.find("td", {"data-test": "NET_ASSETS-value"}) is not None: # ETF
         data["_type"] = "etf"
         data["previous-close"] = soup.find("td", {"data-test": "PREV_CLOSE-value"}).text
         data["open"] = soup.find("td", {"data-test": "OPEN-value"}).text
